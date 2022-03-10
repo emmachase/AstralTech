@@ -4,6 +4,7 @@ import io.astralforge.astralitems.AstralItems
 import io.astralforge.astraltech.tile.Powerable
 import org.bukkit.Material
 import org.bukkit.block.Block
+import org.bukkit.block.BlockFace.*
 
 class Network {
   companion object {
@@ -93,12 +94,21 @@ class Network {
 //  }
 //
   fun removeNode(node: NetworkNodeTile) {
-    node.network = null
-    nodes.remove(node)
+    for (n in nodes) {
+      n.newNetwork(null)
+
+    }
+    nodes.clear()
+
+    val block = node.location.block
+    for (face in listOf(NORTH, SOUTH, EAST, WEST, UP, DOWN)) {
+      val neighbor = block.getRelative(face)
+      getNetworkFromNodeBlock(neighbor)
+    }
   }
 
   fun addNode(node: NetworkNodeTile) {
-    node.network = this
+    node.newNetwork(this)
     nodes.add(node)
   }
 
@@ -128,6 +138,11 @@ class Network {
   }
 
   private fun settleNetwork() {
+    println("NODES $nodes")
+    println(requests)
+    println(provisionedPower)
+    println(spokenTiles)
+
     for (req in requests) {
       val request = req.value
       val fulfillment = minOf(provisionedPower, request)
@@ -142,6 +157,7 @@ class Network {
     // Cleanup
     spokenTiles.clear()
     requests.clear()
+    provisionedPower = 0
   }
 
 //  private fun Block.getNetNeighbors(): List<Block> {

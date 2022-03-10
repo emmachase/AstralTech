@@ -3,7 +3,7 @@ package io.astralforge.astraltech.network
 import io.astralforge.astralitems.AstralItems
 import org.bukkit.Material
 import org.bukkit.block.Block
-import org.bukkit.block.BlockFace
+import org.bukkit.block.BlockFace.*
 
 abstract class Search<V> {
 
@@ -13,20 +13,20 @@ abstract class Search<V> {
 
   fun run(origin: Block): V {
     val queue = mutableListOf(origin)
-    val visited = mutableSetOf(origin)
+    val visited = mutableSetOf(origin.location)
 
     while (queue.isNotEmpty()) {
       val current = queue.removeAt(0)
 
-      for (face in BlockFace.values()) {
-        val neighbor = current.getRelative(face)
-        if (visited.contains(neighbor)) {
-          continue
-        }
+      visited.add(current.location)
+      if (visitNode(current)) {
+        for (face in listOf(NORTH, SOUTH, EAST, WEST, UP, DOWN)) {
+          val neighbor = current.getRelative(face)
+          if (visited.contains(neighbor.location)) {
+            continue
+          }
 
-        if (visitNode(origin)) {
           queue.add(neighbor)
-          visited.add(neighbor)
         }
       }
     }
@@ -47,13 +47,16 @@ class DiscoverySearch: Search<Network>() {
   }
 
   override fun visitNode(block: Block): Boolean {
+    println("visit")
     if (isEdgeBlock(block)) return true
-
+    println("not an edge")
     val blockType = itemsPlugin.getTileEntity(block)
     if (blockType.isEmpty) return false
+    println("is a tile entity lol")
 
     val nodeType = blockType.get() as? NetworkNodeTile ?: return false
     foundNodes.add(nodeType)
+    println("its a network node!!")
     return true
   }
 
@@ -63,6 +66,7 @@ class DiscoverySearch: Search<Network>() {
       val nodeNet = node.network
       if (nodeNet != null) {
         network = Network.unionNetwork(network, nodeNet)
+        node.newNetwork(network)
       } else {
         network.addNode(node)
       }

@@ -22,12 +22,6 @@
       <url>https://repo.codemc.org/repository/maven-public/</url>
       <layout>default</layout>
     </repository>
-
-    <repository>
-      <id>local-repo</id>
-      <name>Local Repo</name>
-      <url>file:///Users/emmacb/plugins/</url>
-    </repository>
   </repositories>
   <dependencies>
     <dependency>
@@ -73,21 +67,75 @@
     </resources>
     <plugins>
       <plugin>
-        <groupId>org.jetbrains.kotlin</groupId>
         <artifactId>kotlin-maven-plugin</artifactId>
+        <groupId>org.jetbrains.kotlin</groupId>
         <version>${kotlin.version}</version>
-
         <executions>
           <execution>
             <id>compile</id>
-            <phase>compile</phase>
-            <goals>
-              <goal>compile</goal>
-            </goals>
+            <goals> <goal>compile</goal> </goals>
+            <configuration>
+              <sourceDirs>
+                <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
+              </sourceDirs>
+            </configuration>
           </execution>
-        </executions>
-      </plugin>
-<!--      <plugin>-->
+      </executions>
+    </plugin>
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-compiler-plugin</artifactId>
+      <version>3.5.1</version>
+      <executions>
+        <execution>
+          <id>default-compile</id>
+          <phase>none</phase>
+        </execution>
+        <execution>
+          <id>default-testCompile</id>
+          <phase>none</phase>
+        </execution>
+        <execution>
+          <id>java-compile</id>
+          <phase>compile</phase>
+          <goals> <goal>compile</goal> </goals>
+        </execution>
+        <execution>
+          <id>java-test-compile</id>
+          <phase>test-compile</phase>
+          <goals> <goal>testCompile</goal> </goals>
+        </execution>
+      </executions>
+    </plugin>
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-shade-plugin</artifactId>
+      <version>3.1.0</version>
+      <executions>
+        <execution>
+          <phase>package</phase>
+          <goals>
+            <goal>shade</goal>
+          </goals>
+          <configuration>
+            <artifactSet>
+              <excludes>
+                <exclude>io.astralforge.astralitems</exclude>
+              </excludes>
+            </artifactSet>
+          </configuration>
+<!--          <configuration>-->
+<!--            <relocations>-->
+<!--              <relocation>-->
+<!--                <pattern>io.astralforge.astralitems</pattern>-->
+<!--                <shadedPattern>io.astralforge.astraltech.shaded.astralitems</shadedPattern>-->
+<!--              </relocation>-->
+<!--            </relocations>-->
+<!--          </configuration>-->
+        </execution>
+      </executions>
+    </plugin>
+    <!--      <plugin>-->
 <!--        <groupId>org.apache.maven.plugins</groupId>-->
 <!--        <artifactId>maven-shade-plugin</artifactId>-->
 <!--        <version>3.1.0</version>-->

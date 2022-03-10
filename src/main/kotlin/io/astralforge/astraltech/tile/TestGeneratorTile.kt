@@ -12,6 +12,8 @@ class TestGeneratorTile: NetworkNodeTile() {
   override fun tick() {
     super.tick()
 
+    println("$this Network: $network")
+
     network?.providePower(this, 50)
   }
 }

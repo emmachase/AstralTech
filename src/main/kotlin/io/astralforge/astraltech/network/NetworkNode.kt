@@ -6,10 +6,15 @@ abstract class NetworkNodeTile : AstralTileEntity() {
   var network: Network? = null
 
   override fun onLoad() {
-    network = Network.getNetworkFromNodeBlock(location.block)
+    Network.getNetworkFromNodeBlock(location.block)
   }
 
   override fun onUnload() {
     network?.removeNode(this)
+  }
+
+  fun newNetwork(network: Network?) {
+    println("new net $network")
+    this.network = network
   }
 }

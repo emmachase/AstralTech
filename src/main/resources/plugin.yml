@@ -1,4 +1,4 @@
-name: io.astralforge.astraltech.AstralTech
+name: AstralTech
 version: 0.1
 author: Allymonies & anemonemma
 main: io.astralforge.astraltech.AstralTech
@@ -21,7 +21,7 @@ permissions:
   # astralitems.purgeplaceholder:
   #   default: false
   #   description: Allows usage of /purgeplaceholder
-  astralitems.*:
+  astraltech.*:
     default: op
     description: Allows access to every io.astralforge.astraltech.AstralTech command.
     children:
