@@ -15,8 +15,6 @@ class AstralTech: JavaPlugin() {
   override fun onEnable() {
     logger.info("AstralTech running!")
 
-    val astralItemsPlugin = Bukkit.getServer().pluginManager.getPlugin("AstralItems") as AstralItems
-
     val testMachine = AstralBasicBlockSpec.builder().itemSpec(AstralItemSpec.builder()
         .id(NamespacedKey(this, "test_machine"))
         .material(Material.DIAMOND_BLOCK)
@@ -24,7 +22,7 @@ class AstralTech: JavaPlugin() {
         .build()
     )
         .tileEntityBuilder(TestMachineTile)
-        .build().register(astralItemsPlugin)
+        .build().register()
 
     val testGenerator = AstralBasicBlockSpec.builder().itemSpec(AstralItemSpec.builder()
         .id(NamespacedKey(this, "test_generator"))
@@ -33,7 +31,7 @@ class AstralTech: JavaPlugin() {
         .build()
     )
         .tileEntityBuilder(TestGeneratorTile)
-        .build().register(astralItemsPlugin)
+        .build().register()
 
     val testTick = AstralBasicBlockSpec.builder().itemSpec(AstralItemSpec.builder()
         .id(NamespacedKey(this, "test_tick"))
@@ -42,6 +40,6 @@ class AstralTech: JavaPlugin() {
         .build()
     )
         .tileEntityBuilder(TestTickTile)
-        .build().register(astralItemsPlugin)
+        .build().register()
   }
 }
