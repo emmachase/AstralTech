@@ -47,16 +47,12 @@ class DiscoverySearch: Search<Network>() {
   }
 
   override fun visitNode(block: Block): Boolean {
-    println("visit")
     if (isEdgeBlock(block)) return true
-    println("not an edge")
     val blockType = itemsPlugin.getTileEntity(block)
     if (blockType.isEmpty) return false
-    println("is a tile entity lol")
 
     val nodeType = blockType.get() as? NetworkNodeTile ?: return false
     foundNodes.add(nodeType)
-    println("its a network node!!")
     return true
   }
 

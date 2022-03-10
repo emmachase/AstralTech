@@ -1,6 +1,7 @@
 package io.astralforge.astraltech.network
 
 import io.astralforge.astralitems.block.tile.AstralTileEntity
+import org.bukkit.persistence.PersistentDataContainer
 
 abstract class NetworkNodeTile : AstralTileEntity() {
   var network: Network? = null
@@ -14,7 +15,10 @@ abstract class NetworkNodeTile : AstralTileEntity() {
   }
 
   fun newNetwork(network: Network?) {
-    println("new net $network")
     this.network = network
+  }
+
+  override fun serialize(container: PersistentDataContainer) {
+    super.serialize(container)
   }
 }

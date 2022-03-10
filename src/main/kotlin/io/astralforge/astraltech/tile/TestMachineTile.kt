@@ -1,34 +1,29 @@
 package io.astralforge.astraltech.tile
 
-import io.astralforge.astraltech.network.NetworkNodeTile
 import org.bukkit.Particle
 
-interface Powerable {
-  fun receivePower(complete: Boolean, rf: Int)
-}
+class TestMachineTile: BufferedMachineTile(maxBuffer=1000L, maxChargeRate=10L) {
+  private val powerPerOperation = 200L
 
-class TestMachineTile: NetworkNodeTile(), Powerable {
   companion object : Builder {
     override fun build(): TestMachineTile {
       return TestMachineTile()
     }
   }
 
-  override fun receivePower(complete: Boolean, rf: Int) {
-    if (complete) {
+  override fun receivePower(rf: Long): Long {
+    val received = super.receivePower(rf)
+
+
+    if (super.buffer > powerPerOperation) {
       location.world?.spawnParticle(
           Particle.HEART,
           location,
           1
       )
+      buffer -= powerPerOperation
     }
-  }
 
-  override fun tick() {
-    super.tick()
-
-    println("$this Network: $network")
-
-    network?.requestPower(this, 10)
+    return received
   }
 }

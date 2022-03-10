@@ -12,8 +12,14 @@ import org.bukkit.NamespacedKey
 import org.bukkit.plugin.java.JavaPlugin
 
 class AstralTech: JavaPlugin() {
+  companion object {
+    val instance get() = Bukkit.getPluginManager().getPlugin("AstralTech")!!
+  }
+
   override fun onEnable() {
     logger.info("AstralTech running!")
+
+    this.logger.info(Bukkit.getWorlds()[0].getBlockAt(20000, 16, 20000).chunk.isLoaded.toString())
 
     val testMachine = AstralBasicBlockSpec.builder().itemSpec(AstralItemSpec.builder()
         .id(NamespacedKey(this, "test_machine"))

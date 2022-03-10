@@ -119,15 +119,15 @@ class Network {
   }
 
   val spokenTiles: MutableSet<NetworkNodeTile> = mutableSetOf()
-  val requests: MutableMap<NetworkNodeTile, Int> = mutableMapOf()
-  var provisionedPower = 0
+  val requests: MutableMap<NetworkNodeTile, Long> = mutableMapOf()
+  var provisionedPower = 0L
 
-  fun requestPower(node: NetworkNodeTile, rf: Int) {
+  fun requestPower(node: NetworkNodeTile, rf: Long) {
     requests[node] = rf
     speak(node)
   }
 
-  fun providePower(node: NetworkNodeTile, rf: Int) {
+  fun providePower(node: NetworkNodeTile, rf: Long) {
     provisionedPower += rf
     speak(node)
   }
@@ -138,26 +138,27 @@ class Network {
   }
 
   private fun settleNetwork() {
-    println("NODES $nodes")
-    println(requests)
-    println(provisionedPower)
-    println(spokenTiles)
 
-    for (req in requests) {
-      val request = req.value
-      val fulfillment = minOf(provisionedPower, request)
-      provisionedPower -= fulfillment
+    while (provisionedPower > 0 && requests.isNotEmpty()) {
+      val split = maxOf(1L, provisionedPower / requests.size)
+      requests.entries.removeAll { req ->
+        if (provisionedPower == 0L) return@removeAll true
+        val allocatedPower = minOf(split, req.value)
+        val machine = req.key as? Powerable ?: return@removeAll true
+        val consumed = machine.receivePower(allocatedPower)
+        // Leftover power
+        provisionedPower -= consumed
+        requests[req.key] = req.value - consumed
+        // Remove if request is fulfilled
+        return@removeAll requests[req.key]!! <= 0L
+      }
 
-      val machine = req.key as? Powerable
-      machine?.receivePower(fulfillment == request, fulfillment)
-
-      if (provisionedPower == 0) break
     }
 
     // Cleanup
     spokenTiles.clear()
     requests.clear()
-    provisionedPower = 0
+    provisionedPower = 0L
   }
 
 //  private fun Block.getNetNeighbors(): List<Block> {
