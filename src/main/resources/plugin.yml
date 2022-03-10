@@ -1,0 +1,29 @@
+name: io.astralforge.astraltech.AstralTech
+version: 0.1
+author: Allymonies & anemonemma
+main: io.astralforge.astraltech.AstralTech
+depend: [AstralItems]
+api-version: 1.18
+website: astralforge.io
+commands:
+  # giveai:
+  #   description: Give Astral Item
+  #   usage: /giveai <item id> [amount]
+  #   permission: astralitems.give
+  # purgeplaceholder:
+  #   description: Purge un-registered placeholder block (only use if you know what you are doing)
+  #   usage: /purgeplaceholder <x> <y> <z>
+  #   permission: astralitems.purgeplaceholder
+permissions:
+  # astralitems.give:
+  #   default: false
+  #   description: Allows usage of /giveai
+  # astralitems.purgeplaceholder:
+  #   default: false
+  #   description: Allows usage of /purgeplaceholder
+  astralitems.*:
+    default: op
+    description: Allows access to every io.astralforge.astraltech.AstralTech command.
+    children:
+      # astralitems.give: true
+      # astralitems.purgeplaceholder: true
