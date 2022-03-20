@@ -1,12 +1,8 @@
 package io.astralforge.astraltech
 
 import io.astralforge.astralitems.AstralItemSpec
-import io.astralforge.astralitems.AstralItems
 import io.astralforge.astralitems.block.AstralBasicBlockSpec
-import io.astralforge.astraltech.tile.InventoryListener
-import io.astralforge.astraltech.tile.TestGeneratorTile
-import io.astralforge.astraltech.tile.TestMachineTile
-import io.astralforge.astraltech.tile.TestTickTile
+import io.astralforge.astraltech.tile.*
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
@@ -31,6 +27,15 @@ class AstralTech: JavaPlugin() {
         .build()
     )
         .tileEntityBuilder(TestMachineTile)
+        .build().register()
+
+    val autoCraftingMachine = AstralBasicBlockSpec.builder().itemSpec(AstralItemSpec.builder()
+        .id(NamespacedKey(this, "auto_crafting_machine"))
+        .material(Material.OAK_PLANKS)
+        .displayName("Auto Crafting Machine")
+        .build()
+    )
+        .tileEntityBuilder(AutoCraftingMachineTile)
         .build().register()
 
     val testGenerator = AstralBasicBlockSpec.builder().itemSpec(AstralItemSpec.builder()

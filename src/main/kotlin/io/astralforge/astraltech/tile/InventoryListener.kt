@@ -9,11 +9,16 @@ import org.bukkit.inventory.Inventory
 import java.util.WeakHashMap
 
 object InventoryListener: Listener {
-  val knownInventories = WeakHashMap<Inventory, TechInventory>()
+  val knownInventories = WeakHashMap<Inventory, TechInventoryListener>()
 
   @EventHandler(priority = EventPriority.NORMAL)
   fun onInventoryClickInteract(event: InventoryClickEvent) {
     knownInventories[event.inventory]?.onInventoryInteract(event)
+  }
+
+  @EventHandler(priority = EventPriority.NORMAL)
+  fun onInventoryDragInteract(event: InventoryDragEvent) {
+    knownInventories[event.inventory]?.onInventoryDrag(event)
   }
 
 //  @EventHandler(priority = EventPriority.NORMAL)
