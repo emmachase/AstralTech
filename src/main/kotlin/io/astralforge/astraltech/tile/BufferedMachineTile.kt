@@ -2,7 +2,6 @@ package io.astralforge.astraltech.tile
 
 import io.astralforge.astraltech.AstralTech
 import io.astralforge.astraltech.network.NetworkNodeTile
-import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
@@ -12,8 +11,8 @@ interface Powerable {
 }
 
 abstract class BufferedMachineTile constructor(
-  private val maxBuffer: Long,
-  private val maxChargeRate: Long
+  val maxBuffer: Long,
+  val maxChargeRate: Long
 ): NetworkNodeTile(), Powerable {
   protected var buffer = 0L
   private val bufferKey = NamespacedKey(AstralTech.instance, "buffer")
@@ -29,13 +28,13 @@ abstract class BufferedMachineTile constructor(
     network?.requestPower(this, minOf(maxChargeRate, maxBuffer - buffer))
   }
 
-  override fun serialize(container: PersistentDataContainer) {
-    super.serialize(container)
+  override fun onUnload(container: PersistentDataContainer) {
+    super.onUnload(container)
     container.set(bufferKey, PersistentDataType.LONG, buffer)
   }
 
-  override fun deserialize(container: PersistentDataContainer) {
-    super.deserialize(container)
+  override fun onLoad(container: PersistentDataContainer) {
+    super.onLoad(container)
     buffer = container[bufferKey, PersistentDataType.LONG] ?: buffer
   }
 }

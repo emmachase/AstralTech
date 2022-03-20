@@ -6,19 +6,18 @@ import org.bukkit.persistence.PersistentDataContainer
 abstract class NetworkNodeTile : AstralTileEntity() {
   var network: Network? = null
 
-  override fun onLoad() {
+  override fun onLoad(container: PersistentDataContainer) {
+    super.onLoad(container);
     Network.getNetworkFromNodeBlock(location.block)
   }
 
-  override fun onUnload() {
-    network?.removeNode(this)
+  override fun onUnload(container: PersistentDataContainer) {
+    super.onUnload(container)
+    network?.removeNode(this);
   }
 
   fun newNetwork(network: Network?) {
     this.network = network
   }
 
-  override fun serialize(container: PersistentDataContainer) {
-    super.serialize(container)
-  }
 }
