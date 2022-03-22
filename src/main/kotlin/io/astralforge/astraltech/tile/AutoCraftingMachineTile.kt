@@ -11,6 +11,7 @@ class AutoCraftingMachineTile : CraftingMachineTile(
     40L,
     craftingBox = Box( XY(1,1), XY(3,3) ),
     25,
+    23,
     "Auto Crafting Machine",
     Material.IRON_PICKAXE,
     listOf(

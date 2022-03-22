@@ -25,6 +25,7 @@ abstract class CraftingMachineTile constructor(
     private val energyUseRate: Long,
     private val craftingBox: Box,
     private val outputSlot: Int,
+    private val progressSlot: Int,
     inventoryName: String,
     private val progressMaterial: Material,
     private val strategies: List<Strategy<out Recipe>>,
@@ -119,7 +120,7 @@ abstract class CraftingMachineTile constructor(
     }
 
     paneLoadingBar(inventory, (46..52).toList(), buffer, maxBuffer, "Energy Buffer")
-    durabilityLoadingBar(inventory, 23, progressMaterial, energyUsed, energyPerOperation, "Progress")
+    durabilityLoadingBar(inventory, progressSlot, progressMaterial, energyUsed, energyPerOperation, "Progress")
     //durabilityLoadingBar(inventory, 40, Material.IRON_HOE, energyUsed, energyPerOperation, "Progress")
     //paneLoadingBar(inventory, listOf(39, 29, 20, 11, 3, 4, 5, 15, 24, 33, 41), buffer, maxBuffer, "Energy Buffer")
   }
@@ -144,18 +145,18 @@ abstract class CraftingMachineTile constructor(
   }
 
   private fun applyNewRecipe() {
-      energyUsed = 0L
+    energyUsed = 0L
 
-      currentCraftingMatrix = craftingBox.getBox().map { inventory.getItem(it)?.clone() }.toTypedArray()
-      val evaluator: AstralRecipeEvaluator = AstralItems.getInstance().recipeEvaluator
-      var matchResult = evaluator.matchRecipe(currentCraftingMatrix, strategies)
-      if (matchResult.isEmpty && canFallbackToVanilla) {
-        matchResult = evaluator.fallbackToVanilla(currentCraftingMatrix, strategies)
-      }
+    currentCraftingMatrix = craftingBox.getBox().map { inventory.getItem(it)?.clone() }.toTypedArray()
+    val evaluator: AstralRecipeEvaluator = AstralItems.getInstance().recipeEvaluator
+    var matchResult = evaluator.matchRecipe(currentCraftingMatrix, strategies)
+    if (matchResult.isEmpty && canFallbackToVanilla) {
+      matchResult = evaluator.fallbackToVanilla(currentCraftingMatrix, strategies)
+    }
 
-      active = (!matchResult.isEmpty) && canStackResult(matchResult.get().result)
+    active = (!matchResult.isEmpty) && canStackResult(matchResult.get().result)
 
-      matchedRecipe = matchResult.orElse(null)
+    matchedRecipe = matchResult.orElse(null)
   }
 
   override fun onInventoryInteract(event: InventoryClickEvent) {
