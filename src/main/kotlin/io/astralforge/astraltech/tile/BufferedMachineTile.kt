@@ -25,7 +25,8 @@ interface Powerable {
 
 abstract class BufferedMachineTile constructor(
   val maxBuffer: Long,
-  val maxChargeRate: Long
+  val maxChargeRate: Long,
+  val handleRequests: Boolean = true
 ): NetworkNodeTile(), Powerable {
   protected var buffer = 0L
   private val bufferKey = NamespacedKey(AstralTech.instance, "buffer")
@@ -38,7 +39,9 @@ abstract class BufferedMachineTile constructor(
 
   override fun tick() {
     super.tick()
-    network?.requestPower(this, minOf(maxChargeRate, maxBuffer - buffer))
+    if (handleRequests) {
+      network?.requestPower(this, minOf(maxChargeRate, maxBuffer - buffer))
+    }
   }
 
   override fun onUnload(container: PersistentDataContainer) {

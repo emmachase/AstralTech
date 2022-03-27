@@ -195,7 +195,8 @@ abstract class CraftingMachineTile constructor(
       }
     }.runTask(AstralItems.getInstance())
     for (slot in event.rawSlots) {
-      if (slot !in craftingBox && slot != outputSlot) {
+      val invSlot = event.view.convertSlot(slot)
+      if (event.view.getInventory(slot)?.equals(inventory) == true && invSlot !in craftingBox && invSlot != outputSlot) {
         event.isCancelled = true
       }
     }

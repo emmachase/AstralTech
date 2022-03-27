@@ -120,6 +120,7 @@ class Network {
 
   val spokenTiles: MutableSet<NetworkNodeTile> = mutableSetOf()
   val requests: MutableMap<NetworkNodeTile, Long> = mutableMapOf()
+  val offers: MutableMap<NetworkEnergyProvider, Long> = mutableMapOf()
   var provisionedPower = 0L
 
   fun requestPower(node: NetworkNodeTile, rf: Long) {
@@ -127,7 +128,8 @@ class Network {
     speak(node)
   }
 
-  fun providePower(node: NetworkNodeTile, rf: Long) {
+  fun providePower(node: NetworkNodeTile, provider: NetworkEnergyProvider, rf: Long) {
+    offers[provider] = rf
     provisionedPower += rf
     speak(node)
   }
@@ -145,10 +147,21 @@ class Network {
         if (provisionedPower == 0L) return@removeAll true
         val allocatedPower = minOf(split, req.value)
         val machine = req.key as? Powerable ?: return@removeAll true
-        val consumed = machine.receivePower(allocatedPower)
+        var consumed = machine.receivePower(allocatedPower)
         // Leftover power
         provisionedPower -= consumed
         requests[req.key] = req.value - consumed
+        for (offer in offers) {
+          if (offer.value > 0) {
+            val offerPowerConsumed = minOf(offer.value, consumed)
+            consumed -= offerPowerConsumed
+            offers[offer.key] = offer.value - offerPowerConsumed
+            if (offers[offer.key] == 0L) {
+              offer.key.onOfferedPowerResults(0L)
+              offers.remove(offer.key)
+            }
+          }
+        }
         // Remove if request is fulfilled
         return@removeAll requests[req.key]!! <= 0L
       }
@@ -158,6 +171,10 @@ class Network {
     // Cleanup
     spokenTiles.clear()
     requests.clear()
+    for (offer in offers) {
+      offer.key.onOfferedPowerResults(offer.value)
+    }
+    offers.clear()
     provisionedPower = 0L
   }
 
