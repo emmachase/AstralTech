@@ -1,12 +1,17 @@
 package io.astralforge.astraltech.tile
 
 import io.astralforge.astralitems.AstralItems
+import io.astralforge.astralitems.block.tile.ItemHandler
+import io.astralforge.astralitems.block.tile.ItemTransferHandler
+import io.astralforge.astralitems.block.tile.MappedInventoryItemHandler
+import io.astralforge.astralitems.block.tile.SidedInventory
 import io.astralforge.astralitems.recipe.AstralRecipeEvaluator
 import io.astralforge.astralitems.recipe.AstralRecipeEvaluator.Strategy
 import io.astralforge.astraltech.AstralTech
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
+import org.bukkit.block.BlockFace
 import org.bukkit.event.block.Action
 import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -30,10 +35,13 @@ abstract class CraftingMachineTile constructor(
     private val progressMaterial: Material,
     private val strategies: List<Strategy<out Recipe>>,
     private val canFallbackToVanilla: Boolean
-): BufferedMachineTile(maxBuffer=maxBuffer, maxChargeRate=maxChargeRate), TechInventoryListener {
+): BufferedMachineTile(maxBuffer=maxBuffer, maxChargeRate=maxChargeRate), TechInventoryListener, SidedInventory, ItemTransferHandler {
   private val energyUsedKey = NamespacedKey(AstralTech.instance, "energy_used")
   private var energyUsed = 0L
   private val inventory = Bukkit.createInventory(null, 6*9, inventoryName).registerWithTech(this)
+  private val inputItemHandler = MappedInventoryItemHandler(inventory, craftingBox.getBox(), this)
+  private val outputItemHandler = MappedInventoryItemHandler(inventory, listOf(outputSlot), this)
+  private val containerItemHandler = MappedInventoryItemHandler(inventory, craftingBox.getBox() + outputSlot, this)
   private var currentCraftingMatrix: Array<ItemStack?>? = null
   private var active: Boolean = false
   set(value) {
@@ -190,6 +198,25 @@ abstract class CraftingMachineTile constructor(
       if (slot !in craftingBox && slot != outputSlot) {
         event.isCancelled = true
       }
+    }
+  }
+
+  override fun getItemHandler(side: BlockFace?): ItemHandler {
+    if (side == BlockFace.UP || side == BlockFace.DOWN) {
+      return outputItemHandler
+    }
+    return inputItemHandler
+  }
+
+  override fun getItemHandler(): ItemHandler {
+    return containerItemHandler
+  }
+
+  override fun onItemsTransferred() {
+    if (hasItemTypesChanged()) {
+      applyNewRecipe()
+    } else if (matchedRecipe != null) {
+      active = canStackResult(matchedRecipe!!.result)
     }
   }
 
