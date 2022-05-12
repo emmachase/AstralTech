@@ -106,6 +106,15 @@ class AstralTech: JavaPlugin() {
         .tileEntityBuilder(InserterTile)
         .build().register()
 
+    val miningLaser = AstralBasicBlockSpec.builder().itemSpec(AstralItemSpec.builder()
+        .id(NamespacedKey(this, "mining_laser"))
+        .material(Material.PRISMARINE_BRICKS)
+        .displayName("Mining Laser")
+        .build()
+    )
+        .tileEntityBuilder(MiningLaserMachineTile)
+        .build().register()
+
     val ironDust = AstralItemSpec.builder()
         .id(NamespacedKey(this, "iron_dust"))
         .material(Material.GUNPOWDER)

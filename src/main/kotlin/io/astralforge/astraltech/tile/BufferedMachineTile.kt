@@ -54,6 +54,44 @@ abstract class BufferedMachineTile constructor(
     buffer = container[bufferKey, PersistentDataType.LONG] ?: buffer
   }
 
+  fun optionSelector(inv: Inventory, slots: List<Int>, selected: String, values: List<String>, label: String) {
+    for (i in slots.indices) {
+      val slot = slots[i]
+      if (values.size <= i) continue
+      val value = values[i]
+
+      val item = if (selected == value) {
+        ItemStack(Material.LIME_STAINED_GLASS_PANE)
+      } else {
+        ItemStack(Material.GRAY_STAINED_GLASS_PANE)
+      }
+
+      val nbti = NBTItem(item)
+      nbti.addCompound("display").setString("Name", "{\"text\":\"$label: $value\", \"italic\":false}")
+      inv.setItem(slot, nbti.item)
+    }
+  }
+
+  fun displayToggle(inv: Inventory, slots: List<Int>, toggled: Boolean, active: String, inactive: String ) {
+    for (i in slots.indices) {
+      val slot = slots[i]
+
+      val item = if (toggled) {
+        ItemStack(Material.LIME_STAINED_GLASS_PANE)
+      } else {
+        ItemStack(Material.RED_STAINED_GLASS_PANE)
+      }
+
+      val nbti = NBTItem(item)
+      if (toggled) {
+        nbti.addCompound("display").setString("Name", "{\"text\":\"$active\", \"italic\":false}")
+      } else {
+        nbti.addCompound("display").setString("Name", "{\"text\":\"$inactive\", \"italic\":false}")
+      }
+      inv.setItem(slot, nbti.item)
+    }
+  }
+
   fun paneLoadingBar(inv: Inventory, slots: List<Int>, current: Long, total: Long, label: String) {
     val fullSlots = ((current.toDouble() / total) * slots.size)
     for (i in slots.indices) {

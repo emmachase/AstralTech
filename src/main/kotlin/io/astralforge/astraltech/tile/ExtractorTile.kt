@@ -96,7 +96,7 @@ class ExtractorTile: ItemNetworkNodeTile() {
       if (handler == null) return null
 
       val item = handler.getItem(offer.slot)
-      if (item.type != offer.item.type) return null;
+      if (item == null || item.type != offer.item.type) return null;
 
       if (item.amount <= minOf(offer.item.amount, maxItems)) {
         handler.setItem(offer.slot, null)

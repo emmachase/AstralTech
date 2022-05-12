@@ -121,7 +121,6 @@ class InserterTile: ItemNetworkNodeTile() {
             val fulfilledItem = offerSelected.tile.fulfillOffer(offerSelected, maxToGet)
             if (isNullOrAir(fulfilledItem)) {
               offersToRemove.add(offerSelected)
-              offers[item.type]?.remove(offerSelected)
               continue
             }
             offersToRemove.add(offerSelected)
