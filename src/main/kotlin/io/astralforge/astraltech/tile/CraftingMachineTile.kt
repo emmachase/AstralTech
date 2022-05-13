@@ -135,7 +135,7 @@ abstract class CraftingMachineTile constructor(
 
   override fun onDestroy() {
     super.onDestroy()
-    for (slot in 0..containerItemHandler.size) {
+    for (slot in 0 until containerItemHandler.size) {
       containerItemHandler.getItem(slot)?.let {
         location.world?.dropItem(location, it)
         containerItemHandler.setItem(slot, null)

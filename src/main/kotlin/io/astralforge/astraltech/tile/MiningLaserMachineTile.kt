@@ -113,7 +113,7 @@ class MiningLaserMachineTile: BufferedMachineTile(maxBuffer=50000, maxChargeRate
 
   override fun onDestroy() {
     super.onDestroy()
-    for (slot in 0..containerItemHandler.size) {
+    for (slot in 0 until containerItemHandler.size) {
       containerItemHandler.getItem(slot)?.let {
         location.world?.dropItem(location, it)
         containerItemHandler.setItem(slot, null)
@@ -165,7 +165,8 @@ class MiningLaserMachineTile: BufferedMachineTile(maxBuffer=50000, maxChargeRate
               layersMined++
             }
             if (this.buffer >= energyPerBlock) {
-              val haveInventorySpace = checkBlock.getDrops(miningLaserTool).all {
+              val drops = checkBlock.getDrops(miningLaserTool)
+              val haveInventorySpace = drops.all {
                 var canInsert = false
                 for (slot in 0 until containerItemHandler.size) {
                   if (containerItemHandler.insertItem(slot, it, true) == null) {
@@ -177,7 +178,7 @@ class MiningLaserMachineTile: BufferedMachineTile(maxBuffer=50000, maxChargeRate
               }
               if (haveInventorySpace) {
                 buffer -= energyPerBlock
-                checkBlock.getDrops(miningLaserTool).forEach {
+                drops.forEach {
                   containerItemHandler.insertItem(it)
                 }
                 checkBlock.type = Material.AIR

@@ -1,11 +1,9 @@
 package io.astralforge.astraltech.tile
 
-import io.astralforge.astralitems.AstralItemSpec
 import io.astralforge.astralitems.AstralItems
 import io.astralforge.astralitems.block.tile.*
 import io.astralforge.astraltech.AstralTech
 import io.astralforge.astraltech.network.NetworkEnergyProvider
-import io.astralforge.astraltech.network.NetworkNodeTile
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
@@ -17,21 +15,21 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 
-class CombustionGeneratorTile: BufferedMachineTile(maxBuffer=50000, maxChargeRate=0, handleRequests = false), TechInventoryListener, InventoryHolder, ItemTransferHandler, NetworkEnergyProvider {
+class SteamGeneratorTile: BufferedMachineTile(maxBuffer=50000, maxChargeRate=0, handleRequests = false), TechInventoryListener, InventoryHolder, ItemTransferHandler, NetworkEnergyProvider {
   private val burnTimeKey = NamespacedKey(AstralTech.instance, "burn_time")
   private val burnTimeTotalKey = NamespacedKey(AstralTech.instance, "burn_time_total")
-  private val inventory = Bukkit.createInventory(null, 4*9, "Combustion Generator").registerWithTech(this)
+  private val inventory = Bukkit.createInventory(null, 4*9, "Steam Generator").registerWithTech(this)
   private val inputSlot = 12
   private val progressSlot = 14
-  private val energyPerTick = 50L
+  private val energyPerTick = 10L
   private val outputRate = 100L
   private val containerItemHandler = MappedInventoryItemHandler(inventory, listOf(inputSlot), this)
   private var burnTime = 0L
   private var burnTimeTotal = 0L
 
   companion object : Builder {
-    override fun build(): CombustionGeneratorTile {
-      return CombustionGeneratorTile()
+    override fun build(): SteamGeneratorTile {
+      return SteamGeneratorTile()
     }
   }
 
@@ -74,7 +72,7 @@ class CombustionGeneratorTile: BufferedMachineTile(maxBuffer=50000, maxChargeRat
 
   override fun onDestroy() {
     super.onDestroy()
-    for (slot in 0..containerItemHandler.size) {
+    for (slot in 0 until containerItemHandler.size) {
       containerItemHandler.getItem(slot)?.let {
         location.world?.dropItem(location, it)
         containerItemHandler.setItem(slot, null)

@@ -8,7 +8,7 @@ import org.bukkit.Material
 class PulverizerMachineTile : CraftingMachineTile(
     25000L,
     80L,
-    1000L,
+    2000L,
     40L,
     craftingBox = Box( XY(2,2), XY(2,2) ),
     24,

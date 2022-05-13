@@ -53,23 +53,31 @@ fun displayToggle(inv: Inventory, slots: List<Int>, toggled: Boolean, active: St
 }
 
 fun paneLoadingBar(inv: Inventory, slots: List<Int>, current: Long, total: Long, label: String) {
+  return paneLoadingBar(inv, slots, current, total, label, "")
+}
+
+fun paneLoadingBar(inv: Inventory, slots: List<Int>, current: Long, total: Long, label: String, units: String) {
+  return paneLoadingBar(inv, slots, current, total, label, units, Material.LIME_STAINED_GLASS_PANE, Material.ORANGE_STAINED_GLASS_PANE, Material.RED_STAINED_GLASS_PANE, Material.GRAY_STAINED_GLASS_PANE)
+}
+
+fun paneLoadingBar(inv: Inventory, slots: List<Int>, current: Long, total: Long, label: String, units: String, fullMaterial: Material, mostlyFullMaterial: Material, notEmptyMaterial: Material, emptyMaterial: Material) {
   val fullSlots = ((current.toDouble() / total) * slots.size)
   for (i in slots.indices) {
     val slot = slots[i]
     val progress = fullSlots - i
 
     val item = if (progress >= 0.9) {
-      ItemStack(Material.LIME_STAINED_GLASS_PANE)
+      ItemStack(fullMaterial)
     } else if (progress >= 0.5) {
-      ItemStack(Material.ORANGE_STAINED_GLASS_PANE)
+      ItemStack(mostlyFullMaterial)
     } else if (progress >= 0.1) {
-      ItemStack(Material.RED_STAINED_GLASS_PANE)
+      ItemStack(notEmptyMaterial)
     } else {
-      ItemStack(Material.GRAY_STAINED_GLASS_PANE)
+      ItemStack(emptyMaterial)
     }
 
     val nbti = NBTItem(item)
-    nbti.addCompound("display").setString("Name", "{\"text\":\"$label: $current / $total\", \"italic\":false}")
+    nbti.addCompound("display").setString("Name", "{\"text\":\"$label: $current$units / $total$units\", \"italic\":false}")
     inv.setItem(slot, nbti.item)
   }
 }
@@ -81,13 +89,17 @@ fun getNamedItem(item: ItemStack, name: String): ItemStack {
 }
 
 fun durabilityLoadingBar(inv: Inventory, slot: Int, material: Material, current: Long, total: Long, label: String) {
+  return durabilityLoadingBar(inv, slot, material, current, total, label, "")
+}
+
+fun durabilityLoadingBar(inv: Inventory, slot: Int, material: Material, current: Long, total: Long, label: String, units: String) {
   val item = ItemStack(material)
   val meta = item.itemMeta as Damageable
   meta.damage = ((1 - (current.toDouble() / total)) * item.type.maxDurability).toInt()
   item.itemMeta = meta
 
   val nbti = NBTItem(item)
-  nbti.addCompound("display").setString("Name", "{\"text\":\"$label: $current / $total\", \"italic\":false}")
+  nbti.addCompound("display").setString("Name", "{\"text\":\"$label: $current$units / $total$units\", \"italic\":false}")
 
   inv.setItem(slot, nbti.item)
 }
