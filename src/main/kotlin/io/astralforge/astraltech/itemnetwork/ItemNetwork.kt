@@ -5,6 +5,7 @@ import io.astralforge.astraltech.tile.Powerable
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace.*
+import java.util.*
 
 class ItemNetwork {
   companion object {
@@ -121,7 +122,7 @@ class ItemNetwork {
   val spokenTiles: MutableSet<ItemNetworkNodeTile> = mutableSetOf()
 
   val offers: MutableMap<Material, MutableList<ItemOffer>> = mutableMapOf()
-  val requests: MutableSet<ItemNetworkNodeTile> = mutableSetOf()
+  val requests: PriorityQueue<ItemNodeRequest> = PriorityQueue()
 
   fun addOffer(offer: ItemOffer) {
     val material = offer.item.type
@@ -138,8 +139,8 @@ class ItemNetwork {
     speak(node)
   }
 
-  fun requestItems(node: ItemNetworkNodeTile) {
-    requests.add(node)
+  fun requestItems(node: ItemNetworkNodeTile, priority: Int) {
+    requests.add(ItemNodeRequest(node, priority))
     speak(node)
   }
 
@@ -151,7 +152,7 @@ class ItemNetwork {
   private fun settleNetwork() {
 
     for (request in requests) {
-      request.reviewOffers(offers)
+      request.node.reviewOffers(offers)
     }
 
     // Cleanup
@@ -159,6 +160,20 @@ class ItemNetwork {
     requests.clear()
     for (offer in offers) {
       offer.value.clear()
+    }
+  }
+
+  class ItemNodeRequest: Comparable<ItemNodeRequest> {
+    val node: ItemNetworkNodeTile
+    val priority: Int
+
+    constructor(node: ItemNetworkNodeTile, priority: Int) {
+      this.node = node
+      this.priority = priority
+    }
+
+    override fun compareTo(other: ItemNodeRequest): Int {
+      return priority.compareTo(other.priority)
     }
   }
 

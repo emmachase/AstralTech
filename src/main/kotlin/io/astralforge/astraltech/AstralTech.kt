@@ -24,7 +24,15 @@ class AstralTech: JavaPlugin() {
     server.pluginManager.registerEvents(InventoryListener, this)
 
     this.logger.info(Bukkit.getWorlds()[0].getBlockAt(20000, 16, 20000).chunk.isLoaded.toString())
+    registerItemsAndRecipes()
 
+  }
+
+  fun registerItemsAndRecipes() {
+
+    /*
+    Blocks
+    */
     val testMachine = AstralBasicBlockSpec.builder().itemSpec(AstralItemSpec.builder()
         .id(NamespacedKey(this, "test_machine"))
         .material(Material.DIAMOND_BLOCK)
@@ -115,6 +123,9 @@ class AstralTech: JavaPlugin() {
         .tileEntityBuilder(MiningLaserMachineTile)
         .build().register()
 
+    /*
+    Items
+    */
     val ironDust = AstralItemSpec.builder()
         .id(NamespacedKey(this, "iron_dust"))
         .material(Material.GUNPOWDER)
@@ -135,6 +146,10 @@ class AstralTech: JavaPlugin() {
         .displayName("Copper Dust")
         .build()
     copperDust.register()
+
+    /*
+    Recipes
+     */
 
     AstralItems.getInstance().recipeEvaluator.registerNonVanillaRecipe(PulverizerRecipe(
         NamespacedKey(this, "pulverize_iron"),
@@ -165,6 +180,12 @@ class AstralTech: JavaPlugin() {
         NamespacedKey(this, "pulverize_cobble"),
         MaterialChoice(Material.COBBLESTONE),
         ItemStack(Material.GRAVEL)
+    ))
+
+    AstralItems.getInstance().recipeEvaluator.registerNonVanillaRecipe(PulverizerRecipe(
+        NamespacedKey(this, "pulverize_gravel"),
+        MaterialChoice(Material.GRAVEL),
+        ItemStack(Material.SAND)
     ))
 
     AstralItems.getInstance().recipeEvaluator.registerNonVanillaRecipe(PulverizerRecipe(

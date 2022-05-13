@@ -72,6 +72,16 @@ class CombustionGeneratorTile: BufferedMachineTile(maxBuffer=50000, maxChargeRat
     durabilityLoadingBar(inventory, progressSlot, Material.FLINT_AND_STEEL, burnTime, burnTimeTotal, "Burn Time")
   }
 
+  override fun onDestroy() {
+    super.onDestroy()
+    for (slot in 0..containerItemHandler.size) {
+      containerItemHandler.getItem(slot)?.let {
+        location.world?.dropItem(location, it)
+        containerItemHandler.setItem(slot, null)
+      }
+    }
+  }
+
   private fun attemptFuelConsumption() {
     if (burnTime <= 0 && buffer < maxBuffer) {
       val itemBurnTime = inventory.getItem(inputSlot)?.let { getBurnTime(it) }

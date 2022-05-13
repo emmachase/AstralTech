@@ -133,6 +133,16 @@ abstract class CraftingMachineTile constructor(
     //paneLoadingBar(inventory, listOf(39, 29, 20, 11, 3, 4, 5, 15, 24, 33, 41), buffer, maxBuffer, "Energy Buffer")
   }
 
+  override fun onDestroy() {
+    super.onDestroy()
+    for (slot in 0..containerItemHandler.size) {
+      containerItemHandler.getItem(slot)?.let {
+        location.world?.dropItem(location, it)
+        containerItemHandler.setItem(slot, null)
+      }
+    }
+  }
+
   private fun hasItemTypesChanged(): Boolean {
     val craftingMatrix = craftingBox.getBox().map { inventory.getItem(it) }.toTypedArray()
     return craftingMatrix.indices.notAll { // if not all elements are the same, then something has changed

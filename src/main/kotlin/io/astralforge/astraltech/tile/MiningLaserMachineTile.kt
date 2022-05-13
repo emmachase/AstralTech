@@ -7,7 +7,9 @@ import org.bukkit.*
 import org.bukkit.Registry.MATERIAL
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Container
+import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
+import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryDragEvent
 import org.bukkit.event.player.PlayerInteractEvent
@@ -109,6 +111,16 @@ class MiningLaserMachineTile: BufferedMachineTile(maxBuffer=50000, maxChargeRate
     }
   }
 
+  override fun onDestroy() {
+    super.onDestroy()
+    for (slot in 0..containerItemHandler.size) {
+      containerItemHandler.getItem(slot)?.let {
+        location.world?.dropItem(location, it)
+        containerItemHandler.setItem(slot, null)
+      }
+    }
+  }
+
   fun fireLaser() {
     val laserFace = getLaserFace() ?: return
     val laserLocation = this.location.clone().add(laserFace.direction.multiply(2))
@@ -145,6 +157,7 @@ class MiningLaserMachineTile: BufferedMachineTile(maxBuffer=50000, maxChargeRate
           val checkBlock = checkLocation.block
           if (checkBlock.type != Material.AIR) {
             if (checkBlock.state is Container) continue
+            if (checkBlock.isLiquid) continue
             if (AstralItems.getInstance().getAstralBlock(checkBlock).isPresent) continue
 
             if (!didLayer) {
@@ -194,6 +207,9 @@ class MiningLaserMachineTile: BufferedMachineTile(maxBuffer=50000, maxChargeRate
       if (!event.player.isSneaking) {
         event.isCancelled = true
         event.player.openInventory(inventory)
+      } else if (!event.isBlockInHand) {
+        event.isCancelled = true
+        event.player.openInventory(inventory)
       }
     }
   }
@@ -203,7 +219,10 @@ class MiningLaserMachineTile: BufferedMachineTile(maxBuffer=50000, maxChargeRate
       if ( event.slot !in outputBox) {
         event.isCancelled = true
       }
-      if ( event.slot in depthSelectorBox) {
+      if ( event.slot in depthSelectorBox && event.action == InventoryAction.PICKUP_ALL) {
+        if (event.whoClicked is Player) {
+          (event.whoClicked as Player).playSound(event.whoClicked.location, Sound.BLOCK_NOTE_BLOCK_HAT, SoundCategory.PLAYERS, 1f, 1f)
+        }
         laserDepth = when (event.slot) {
           (1 + 1*9) -> {
             5
@@ -215,7 +234,10 @@ class MiningLaserMachineTile: BufferedMachineTile(maxBuffer=50000, maxChargeRate
             1
           }
         }
-      } else if ( event.slot in rangeSelectorBox) {
+      } else if ( event.slot in rangeSelectorBox && event.action == InventoryAction.PICKUP_ALL) {
+        if (event.whoClicked is Player) {
+          (event.whoClicked as Player).playSound(event.whoClicked.location, Sound.BLOCK_NOTE_BLOCK_HAT, SoundCategory.PLAYERS, 1f, 1f)
+        }
         laserRange = when (event.slot) {
           (7 + 1*9) -> {
             32
@@ -227,7 +249,10 @@ class MiningLaserMachineTile: BufferedMachineTile(maxBuffer=50000, maxChargeRate
             1
           }
         }
-      } else if ( event.slot in silencerBox) {
+      } else if ( event.slot in silencerBox && event.action == InventoryAction.PICKUP_ALL) {
+        if (event.whoClicked is Player) {
+          (event.whoClicked as Player).playSound(event.whoClicked.location, Sound.BLOCK_NOTE_BLOCK_HAT, SoundCategory.PLAYERS, 1f, 1f)
+        }
         laserSilenced = !laserSilenced
       }
     }
