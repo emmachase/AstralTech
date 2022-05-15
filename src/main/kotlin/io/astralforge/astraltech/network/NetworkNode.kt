@@ -3,8 +3,8 @@ package io.astralforge.astraltech.network
 import io.astralforge.astralitems.block.tile.AstralTileEntity
 import org.bukkit.persistence.PersistentDataContainer
 
-abstract class NetworkNodeTile : AstralTileEntity() {
-  var network: Network? = null
+abstract class NetworkNodeTile<Subnet: NetworkMechanism> : AstralTileEntity() {
+  var network: Network<Subnet>? = null
 
   override fun onLoad(container: PersistentDataContainer) {
     super.onLoad(container);
@@ -16,7 +16,7 @@ abstract class NetworkNodeTile : AstralTileEntity() {
     network?.removeNode(this);
   }
 
-  fun newNetwork(network: Network?) {
+  fun newNetwork(network: Network<Subnet>?) {
     this.network = network
   }
 

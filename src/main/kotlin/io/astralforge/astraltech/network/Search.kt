@@ -36,28 +36,31 @@ abstract class Search<V> {
 
 }
 
-class DiscoverySearch: Search<Network>() {
+class DiscoverySearch constructor(private val mechanism: Class<NetworkMechanism>): Search<Network<NetworkMechanism>>() {
 
   private val itemsPlugin: AstralItems get() = AstralItems.getInstance()
 
-  private val foundNodes: MutableList<NetworkNodeTile> = mutableListOf()
+  private val foundNodes: MutableList<NetworkNodeTile<NetworkMechanism>> = mutableListOf()
 
   private fun isEdgeBlock(block: Block): Boolean {
     return block.type == Material.BLACKSTONE_WALL
   }
 
+  @Suppress("UNCHECKED_CAST")
   override fun visitNode(block: Block): Boolean {
     if (isEdgeBlock(block)) return true
     val blockType = itemsPlugin.getTileEntity(block)
     if (blockType.isEmpty) return false
 
-    val nodeType = blockType.get() as? NetworkNodeTile ?: return false
-    foundNodes.add(nodeType)
+    val nodeType = blockType.get() as? NetworkNodeTile<*> ?: return false
+    if (mechanism == nodeType.network?.getMechanism()?.javaClass) return false
+
+    foundNodes.add(nodeType as NetworkNodeTile<NetworkMechanism>)
     return true
   }
 
-  override fun getResult(): Network {
-    var network = Network()
+  override fun getResult(): Network<NetworkMechanism> {
+    var network = Network(mechanism)
     for (node in foundNodes) {
       val nodeNet = node.network
       if (nodeNet != null) {
